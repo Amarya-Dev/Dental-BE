@@ -1,2 +1,2 @@
-# Dental-BE
-A insightful app for counselling doctors and patients
+# Dental-Insight-Studio-Backend
+An insightful canvas app for easing the counselling of the doctors.

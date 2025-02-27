@@ -1,0 +1,52 @@
+services:
+  mysqldb:
+    container_name: mysqlcontainer
+    image: mysql:8.0
+    restart: always
+    ports: 
+      - "3306:3306"
+    expose: 
+      - 3306
+    environment:
+      MYSQL_DATABASE: dentalApp
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: mysql123
+      MYSQL_ROOT_PASSWORD: mysql123
+      SERVICE_TAGS: prod
+      SERVICE_NAME: mysqldb
+    networks: 
+      - internalnet
+
+  nodeapp:
+    container_name: nodeappcontainer
+    build: .
+    image: nodeapp:v1
+    restart: always
+    volumes:
+      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+    command: ["sh", "-c", "wait-for-it.sh mysqldb && node app.js"]
+    ports: 
+      - "4000:4000"
+    expose: 
+      - 4000
+    depends_on: 
+      - mysqldb
+    environment:
+      MYSQL_HOST: mysqldb
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 'mysql123'
+      DATABASE:  dentalApp
+      MYSQL_PORT: 3306
+      JWT_SECRET: dentalInsightStudio#$#$#$#$
+      JWT_EXPIRATION_TIME: 900000000000
+      NODEMAILER_USER: amarya15consultancy@gmail.com
+      NODEMAILER_PASS: cheb wcom lcgp ddtp
+      TOKENSECRET:  token@check
+      MAX_LOGINS: 120
+      SERVICE_TAGS: prod
+      SERVICE_NAME: nodeappservice
+    networks:
+      - internalnet
+
+networks: 
+  internalnet:
