@@ -154,10 +154,11 @@ export const allPatientsFolderName = async (req, res, next) => {
 
 export const getCommonConsentFormAndProthesis = async(req, res, next) =>{
     try {
-        const {type} = req.query;
-        if(type==='consent'|| type==='prosthesis'){
-            return errorResponse(res, '', 'Invalid file type.');
-        }
+        const type = req.query.type;
+        // if(type!='consent'|| type!='prosthesis'){
+        //     return errorResponse(res, '', 'Invalid file type.');
+        // }
+        // console.log(type)
         const data = await listFolderContents(type);
         let mapped_data = data.map(object => {
             return object.Key

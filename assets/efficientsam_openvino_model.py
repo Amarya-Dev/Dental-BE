@@ -39,7 +39,7 @@ def model_call_function(image_path, input_points, compiled_model, type_of_select
     if index != -1:
         final_image_path = image_path[:index]
     final_image_path = final_image_path + '\\convertedImage.png'
-    
+    print('saving final image')
     plt.savefig(final_image_path, bbox_inches='tight', pad_inches=0)
     plt.close()
     
