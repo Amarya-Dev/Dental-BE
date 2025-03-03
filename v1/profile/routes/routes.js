@@ -4,8 +4,7 @@ const router = Router();
 import multer from 'multer';
 import authenticateToken from '../../../middlewares/auth.js';
 import {userLogin, userRegistration, updateUserPassword, userLogout, sendOtpForEmailVerification, verifyEmail, checkEmailVerification, 
-    sendOtpForPasswordUpdate, resetPasswordValidation,
-    checkDoctorsFolderSize} from '../controllers/profileController.js';
+    sendOtpForPasswordUpdate, resetPasswordValidation} from '../controllers/profileController.js';
 import {allPatientsFolderName, deletePatientFile, getAllConsentAndProsthesisSignedUrl, getAllFilesSignedUrlByDoctor, getCommonConsentFormAndProthesis, savePatientData, uploadPatientFile} from '../controllers/patientController.js';
 import {register, login, updatePassword, sendOtp, verifyOtp, patient} from '../../../utils/validation.js';
 import { runModel } from '../controllers/modelController.js';
@@ -33,7 +32,7 @@ router.get('/get-patient-folder-name', allPatientsFolderName)
 // router.get('/upload-common-consent-and-prothesis', uploadCommonConsentFormAndProthesis)
 router.get('/get-common-consent-and-prosthesis', getCommonConsentFormAndProthesis)
 router.post('/efficient-sam', upload_model.single('image'), runModel);
-router.get('/check-doctor-folder-size', checkDoctorsFolderSize)
+// router.get('/check-doctor-folder-size', checkDoctorsFolderSize)
 router.get('/logout/:id', userLogout);
 
 app.use("/", router);

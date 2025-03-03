@@ -38,7 +38,14 @@ export const savePatientData = async (req, res, next) => {
             current_date,
         ]);
 
-        return successResponse(res, '', 'Patient folder created successfully!');
+        return successResponse(res, {
+            doctor_id, 
+            name, 
+            phone_number,
+            folder_name :`patients/${patient_folder_name}`,
+            age, 
+            gender
+        }, 'Patient folder created successfully!');
     } catch (error) {
         next(error);
     }

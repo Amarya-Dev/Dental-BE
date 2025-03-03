@@ -72,3 +72,12 @@ export const insertFolderNameQuery = async (array) => {
     let query = `UPDATE doctors SET folder_name = ? WHERE _id = ?`
     await pool.query(query, array);
 }
+
+export const getAllDoctorsIdsQuery = async (array) => {
+    try {
+        let query = `SELECT _id, email FROM doctors;`
+        return await pool.query(query, array);
+    } catch (error) {
+        console.error(error)
+    }
+}

@@ -6,6 +6,7 @@ import routes from './v1/profile/routes/routes.js'
 
 import { runCronJobs } from './cron_jobs/schedulers.js';
 import { createS3Bucket, createDefaultFolder } from './utils/upload.js';
+import { sendWarningsToDoctors } from './cron_jobs/cronFunctions.js';
 (async () => {
   await setupDatabase();
 
@@ -28,6 +29,7 @@ import { createS3Bucket, createDefaultFolder } from './utils/upload.js';
   app.use('/api/v1', routes);
   // await createS3Bucket();
   // await createDefaultFolder();
+  // await sendWarningsToDoctors()
   app.use('/', (req, res) => {
     res.send("Hey, I'm online now!!");
   });
