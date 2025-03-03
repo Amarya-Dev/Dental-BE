@@ -172,10 +172,10 @@ export const getCommonConsentFormAndProthesis = async(req, res, next) =>{
         });
         let mime_type = type=='consent'? 'image/jpg': type=='prosthesis'? 'image/png': 'application/octet-stream';
 
-        let pre_signed_url= await Promise.all(mapped_data.map(async(key_name)=>{
-            return generatePresignedUrl(key_name, mime_type)
-        }))
-        return successResponse(res, pre_signed_url, `${type} fetched successfully!`);
+        let pre_signed_url_data= await Promise.all(mapped_data.map(async(key_name)=>({
+            pre_signed_url : await generatePresignedUrl(key_name, mime_type) 
+        })))
+        return successResponse(res, pre_signed_url_data, `${type} fetched successfully!`);
     } catch (error) {
         next(error);
     }

@@ -7,6 +7,7 @@ import path from 'path';
 import axios from 'axios';
 import { fileURLToPath } from 'url';
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, error5Response } from "../../../utils/response.js"
+import { generatePresignedUrl } from "../../../utils/upload.js";
 dotenv.config();
 
 export const runModel = async (req, res, next) => {
@@ -17,11 +18,11 @@ export const runModel = async (req, res, next) => {
         }
         let result;
         let command;
-        const doctorId = req.params.doctor_id
+        // const doctorId = req.params.doctor_id
         const imagePath = req.file.path; 
         const selectionType = req.body.selectionType; 
         const inputPoints = JSON.parse(req.body.inputPoints || "[[142, 81], [145, 10]]");
-
+        console.log(req.file)
         // const response = await axios({
         //     url: imageUrl,
         //     method: 'GET',
@@ -46,7 +47,7 @@ export const runModel = async (req, res, next) => {
         // }
 
         console.log(command)
-        exec(command, (error, stdout, stderr) => {
+        exec(command, async(error, stdout, stderr) => {
             if (error) {
                 console.error(`Error executing script: ${error.message}`);
                 return error5Response(res, "", 'Failed to process image.');
@@ -55,25 +56,30 @@ export const runModel = async (req, res, next) => {
                 console.error(`stderr: ${stderr}`);
                 return error5Response(res, "", 'Error in processing..');
             }
-
-            const processedImagePath = path.join('images', 'convertedImage.png');
+            if(stdout){
+                let s3_Key = stdout.trim();
+                let pre_signed_url = await generatePresignedUrl(s3_Key, 'image/png')
+                return successResponse(res, {s3_Key, pre_signed_url}, '');
+            }
+            // const processedImagePath = path.join('images', 'convertedImage.png');
 
             // Read the processed image file as a buffer
-            fs.readFile(processedImagePath, (readError, imageBuffer) => {
-                if (readError) {
-                    console.error(`Error reading processed image: ${readError.message}`);
-                    return error5Response(res, "", 'Failed to read processed image.');
-                }
+            // fs.readFile(processedImagePath, (readError, imageBuffer) => {
+            //     if (readError) {
+            //         console.error(`Error reading processed image: ${readError.message}`);
+            //         return error5Response(res, "", 'Failed to read processed image.');
+            //     }
 
-                // Send the message, image path, and buffer
-               result = {
-                    message: 'Image processed successfully',
-                    imagePath: processedImagePath,
-                    imageBuffer: imageBuffer.toString('base64') // Convert buffer to Base64 for JSON response
-                };
-                return successResponse(res, { image_path : result.imagePath, image_buffer: result.imageBuffer }, result.message);
-            });
+            //     // Send the message, image path, and buffer
+            //    result = {
+            //         message: 'Image processed successfully',
+            //         imagePath: processedImagePath,
+            //         imageBuffer: imageBuffer.toString('base64') // Convert buffer to Base64 for JSON response
+            //     };
+            //     return successResponse(res, { image_path : result.imagePath, image_buffer: result.imageBuffer }, result.message);
+            // });
         });
+        // return successResponse(res, stdout, '');
     } catch (error) {
         next(error);
     }
