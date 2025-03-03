@@ -32,7 +32,7 @@ router.get('/get-consent-and-prosthesis-url', getAllConsentAndProsthesisSignedUr
 router.get('/get-patient-folder-name', allPatientsFolderName)
 // router.get('/upload-common-consent-and-prothesis', uploadCommonConsentFormAndProthesis)
 router.get('/get-common-consent-and-prosthesis', getCommonConsentFormAndProthesis)
-router.post('/efficient-sam/:doctor_id', upload_model.single('image'), runModel);
+router.post('/efficient-sam', upload_model.single('image'), runModel);
 router.get('/check-doctor-folder-size', checkDoctorsFolderSize)
 router.get('/logout/:id', userLogout);
 

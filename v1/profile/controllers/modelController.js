@@ -38,12 +38,12 @@ export const runModel = async (req, res, next) => {
         // const writer = fs.createWriteStream(imagePath);
         // response.data.pipe(writer);
 
-        // command = `python assets/efficientsam_openvino_model.py ${inputPoints[0][0]} ${inputPoints[0][1]} ${inputPoints[1][0]} ${inputPoints[1][1]} "${imagePath}" "${selectionType}"`;
-        if(doctorId == 1111){
-            command = `python assets/efficientsam_openvino_model.py ${inputPoints[0][0]} ${inputPoints[0][1]} ${inputPoints[1][0]} ${inputPoints[1][1]} "${imagePath}" "${selectionType}"`;
-        }else{
-            command = `python assets/sam_openvino_model.py ${inputPoints[0][0]} ${inputPoints[0][1]} ${inputPoints[1][0]} ${inputPoints[1][1]} "${imagePath}" "${selectionType}"`;
-        }
+        command = `python assets/efficientsam_openvino_model.py ${inputPoints[0][0]} ${inputPoints[0][1]} ${inputPoints[1][0]} ${inputPoints[1][1]} "${imagePath}" "${selectionType}"`;
+        // if(doctorId == 1111){
+        //     command = `python assets/efficientsam_openvino_model.py ${inputPoints[0][0]} ${inputPoints[0][1]} ${inputPoints[1][0]} ${inputPoints[1][1]} "${imagePath}" "${selectionType}"`;
+        // }else{
+        //     command = `python assets/sam_openvino_model.py ${inputPoints[0][0]} ${inputPoints[0][1]} ${inputPoints[1][0]} ${inputPoints[1][1]} "${imagePath}" "${selectionType}"`;
+        // }
 
         console.log(command)
         exec(command, (error, stdout, stderr) => {
