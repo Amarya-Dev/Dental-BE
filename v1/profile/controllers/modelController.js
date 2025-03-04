@@ -46,8 +46,8 @@ export const runModel = async (req, res, next) => {
         });
 
         pythonProcess.on("close", async(code) => {
-            // console.log(`Python script exited with code ${code}`);
-            // console.log(outputData)
+            console.log(`Python script exited with code ${code}`);
+            console.log(outputData)
             let s3_Key = outputData.trim();
 
             try {
