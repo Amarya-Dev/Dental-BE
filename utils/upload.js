@@ -10,7 +10,7 @@ AWS.config.update({
   region: REGION
 });
 
-const s3 = new AWS.S3();
+export const s3 = new AWS.S3();
 
 export const createFolder = async (folder_name) => {
   if (!folder_name.endsWith('/')) {

@@ -81,7 +81,7 @@ export const uploadPatientFile = async(req, res, next) =>{
             case 'files':
                 await fileUploadFunction(patient_id, doctor_id, type);
                 break;
-            case 'consent':x
+            case 'consent':
             case 'prosthesis':
                 await fileUploadFunction('', doctor_id, type);
                 break;
@@ -167,13 +167,15 @@ export const getCommonConsentFormAndProthesis = async(req, res, next) =>{
         // }
         // console.log(type)
         const data = await listFolderContents(type);
-        let mapped_data = data.map(object => {
-            return object.Key
+        let mapped_data = data.filter(object => {
+            if(object.Size>0){
+                return object.Key
+            }
         });
         let mime_type = type=='consent'? 'image/jpg': type=='prosthesis'? 'image/png': 'application/octet-stream';
 
         let pre_signed_url_data= await Promise.all(mapped_data.map(async(key_name)=>({
-            pre_signed_url : await generatePresignedUrl(key_name, mime_type) 
+            pre_signed_url : await generatePresignedUrl(key_name.Key, mime_type) 
         })))
         return successResponse(res, pre_signed_url_data, `${type} fetched successfully!`);
     } catch (error) {
