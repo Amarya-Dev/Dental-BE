@@ -13,7 +13,12 @@ from helper import (
     show_anns_dark,
     initialize_model
 )
+from dotenv import load_dotenv
+load_dotenv()
 
+AWS_ACCESS_KEY =  os.getenv('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY =  os.getenv('AWS_SECRET_ACCESS_KEY')
+DOCTORS_BUCKET =  os.getenv('DOCTORS_BUCKET')
 
 
 def model_call_function(image, input_points, compiled_model, type_of_selection, bucket_name, aws_access_key, aws_secret_key):
@@ -92,6 +97,6 @@ if __name__ == "__main__":
 
         # Initialize and run model
         compiled_model = initialize_model(model_path)
-        model_call_function(image, input_points, compiled_model, type_of_selection,'bucketbyaws', 'AKIARHJJNG2JPTNEFVPD', '1A+F8CWtaI9OL5WOhFdhPwW1AWWSsqp9pPPv0DDB')
+        model_call_function(image, input_points, compiled_model, type_of_selection,DOCTORS_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY)
     else:
         print("No arguments specified")
