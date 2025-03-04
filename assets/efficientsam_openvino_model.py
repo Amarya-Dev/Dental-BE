@@ -87,8 +87,7 @@ if __name__ == "__main__":
             input_points = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])]
 
         # Set up model path
-        model_path = 'assets/efficient-sam-vitt.xml'
-        sys.path.append(model_path)
+        model_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
         # model_path += '\\efficient-sam-vitt.xml'
 
         # Initialize and run model
