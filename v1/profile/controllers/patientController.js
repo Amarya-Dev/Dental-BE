@@ -81,7 +81,7 @@ export const uploadPatientFile = async(req, res, next) =>{
             case 'files':
                 await fileUploadFunction(patient_id, doctor_id, type);
                 break;
-            case 'consent':
+            case 'consent':x
             case 'prosthesis':
                 await fileUploadFunction('', doctor_id, type);
                 break;

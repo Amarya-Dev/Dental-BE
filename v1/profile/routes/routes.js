@@ -11,7 +11,7 @@ import { runModel } from '../controllers/modelController.js';
 import { countFeatureLock } from '../controllers/featureCountController.js';
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const upload_model = multer({ dest: 'images/' });
+// const upload_model = multer({ dest: 'images/' });
 router.use(authenticateToken)
 
 app.post('/login', login, userLogin);
@@ -31,7 +31,7 @@ router.get('/get-consent-and-prosthesis-url', getAllConsentAndProsthesisSignedUr
 router.get('/get-patient-folder-name', allPatientsFolderName)
 // router.get('/upload-common-consent-and-prothesis', uploadCommonConsentFormAndProthesis)
 router.get('/get-common-consent-and-prosthesis', getCommonConsentFormAndProthesis)
-router.post('/efficient-sam', upload_model.single('image'), runModel);
+router.post('/efficient-sam', upload.single('file'), runModel);
 // router.get('/check-doctor-folder-size', checkDoctorsFolderSize)
 router.get('/logout/:id', userLogout);
 

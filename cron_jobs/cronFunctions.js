@@ -70,9 +70,9 @@ export const sendWarningsToDoctors =async() =>{
       // console.log(folder_size);
       let quota_percentage = (folder_size/process.env.FOLDER_SIZE_QUOTA_IN_MB) * 100
       if(quota_percentage>90){
-        await sendMail(data[i].email, `You have consumed 90% of your storage quota.`);
+        await sendMail(data[i].email, `You have consumed more than 90% of your storage quota.`, `Storage Warning for Insight Studio`);
       }else if(quota_percentage>50){
-        await sendMail(data[i].email, `You have consumed 50% of your storage quota.`);
+        await sendMail(data[i].email, `You have consumed more than 50% of your storage quota.`, `Storage Warning for Insight Studio`);
       }
     }
   } catch (error) {
