@@ -24,7 +24,7 @@ export const runModel = async (req, res, next) => {
         const selectionType = req.body.selectionType; 
         const inputPoints = JSON.parse(req.body.inputPoints || "[[142, 81], [145, 10]]");
 
-        const pythonProcess = spawn("python", [
+        const pythonProcess = spawn("python3", [
             "assets/efficientsam_openvino_model.py", 
             inputPoints[0][0],
             inputPoints[0][1],
