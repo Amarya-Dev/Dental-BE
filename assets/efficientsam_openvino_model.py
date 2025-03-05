@@ -93,23 +93,23 @@ if __name__ == "__main__":
             input_points = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])]
 
         # Set up model path
-        # model_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
+        model_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
         # model_path += '\\efficient-sam-vitt.xml'
 
-        s3 = boto3.client("s3", aws_access_key_id='AKIARHJJNG2JPTNEFVPD', aws_secret_access_key='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')
-        bucket_name = "bucketbyaws"
+        # s3 = boto3.client("s3", aws_access_key_id='AKIARHJJNG2JPTNEFVPD', aws_secret_access_key='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')
+        # bucket_name = "bucketbyaws"
 
-        s3.download_file(bucket_name, "assets/efficient-sam-vitt.xml", "/tmp/efficient-sam-vitt.xml")
-        s3.download_file(bucket_name, "assets/efficient-sam-vitt.bin", "/tmp/efficient-sam-vitt.bin")
+        # s3.download_file(bucket_name, "assets/efficient-sam-vitt.xml", "/tmp/efficient-sam-vitt.xml")
+        # s3.download_file(bucket_name, "assets/efficient-sam-vitt.bin", "/tmp/efficient-sam-vitt.bin")
 
         # print("Model files downloaded successfully!")
 
         # Initialize model
-        compiled_model = initialize_model("/tmp/efficient-sam-vitt.xml")
+        # compiled_model = initialize_model("/tmp/efficient-sam-vitt.xml")
         # compiled_model = initialize_model(dst_xml_path)
 
         # Initialize and run model
-        # compiled_model = initialize_model(model_path)
+        compiled_model = initialize_model(model_path)
         model_call_function(image, input_points, compiled_model, type_of_selection,'bucketbyaws', 'AKIARHJJNG2JPTNEFVPD', '1A+F8CWtaI9OL5WOhFdhPwW1AWWSsqp9pPPv0DDB')
     else:
         print("No arguments specified")

@@ -76,9 +76,9 @@ export const generatePresignedUrl = async (file_key, mime_type) => {
   try {
 
     // Check if it's a valid image type
-    if (!mime_type.startsWith('image/')) {
-      throw new Error('Invalid file type. Only images are allowed.');
-    }
+    // if (!mime_type.startsWith('image/')) {
+    //   throw new Error('Invalid file type. Only images are allowed.');
+    // }
     const params = {
       Bucket: BUCKET_NAME,
       Key: file_key,
