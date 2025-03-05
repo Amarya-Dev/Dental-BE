@@ -6,6 +6,7 @@ import base64
 from PIL import Image
 import matplotlib.pyplot as plt
 import uuid
+import shutil
 from botocore.exceptions import NoCredentialsError
 from helper import (
     prepare_input,
@@ -92,11 +93,27 @@ if __name__ == "__main__":
             input_points = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])]
 
         # Set up model path
-        model_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
+        # model_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
         # model_path += '\\efficient-sam-vitt.xml'
 
+        src_xml_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
+        src_bin_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.bin")
+
+        dst_xml_path = "/tmp/efficient-sam-vitt.xml"
+        dst_bin_path = "/tmp/efficient-sam-vitt.bin"
+
+        # Check if both files exist
+        if not os.path.exists(src_xml_path) or not os.path.exists(src_bin_path):
+            print(f"Error: Model files missing in assets/ directory!")
+            sys.exit(1)
+
+        # Copy both files
+        shutil.copy(src_xml_path, dst_xml_path)
+        shutil.copy(src_bin_path, dst_bin_path)
+        compiled_model = initialize_model(dst_xml_path)
+
         # Initialize and run model
-        compiled_model = initialize_model(model_path)
-        model_call_function(image, input_points, compiled_model, type_of_selection,DOCTORS_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY)
+        # compiled_model = initialize_model(model_path)
+        model_call_function(image, input_points, compiled_model, type_of_selection,'bucketbyaws', 'AKIARHJJNG2JPTNEFVPD', '1A+F8CWtaI9OL5WOhFdhPwW1AWWSsqp9pPPv0DDB')
     else:
         print("No arguments specified")
