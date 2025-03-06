@@ -42,7 +42,7 @@ export const runModel = async (req, res, next) => {
         });
 
         pythonProcess.stderr.on("data", (data) => {
-            console.error(Error: ${data.toString()});
+            console.error(`Error: ${data.toString()}`);
         });
 
         pythonProcess.on("close", async(code) => {
