@@ -78,7 +78,7 @@ def model_call_function(image, input_points, compiled_model, type_of_selection, 
         print("Error uploading to S3:", e)
         return None
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     if len(sys.argv) > 1:
         type_of_selection = str(sys.argv[5])
 
