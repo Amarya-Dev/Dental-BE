@@ -38,13 +38,11 @@ def model_call_function(image, input_points, compiled_model, type_of_selection, 
         example_input = prepare_input(image, input_points, input_labels, torch_tensor=False)
         
         # print("Executing compiled_model...")
-        print("reached result")
         result = compiled_model(example_input)
-        print("Model execution successful!")
+        # print("Model execution successful!")
 
         predicted_logits, predicted_iou = result[0], result[1]
         predicted_mask = postprocess_results(predicted_iou, predicted_logits)
-        print("passed")
     except Exception as e:
         print("Error in model execution:", e)
         return None
@@ -94,15 +92,14 @@ if __name__ == "__main__":
             input_points = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])]
 
         # Set up model path
-        model_path_print = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
-        print("model_path_print", model_path_print)
+        # model_path_print = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
+        # print("model_path_print", model_path_print)
         model_path =  "assets/efficient-sam-vitt.xml"
 
         # model_path += '\\efficient-sam-vitt.xml'
 
         # Initialize and run model
         compiled_model = initialize_model(model_path)
-        print("passed")
         model_call_function(image, input_points, compiled_model, type_of_selection,'bucketbyaws', 'AKIARHJJNG2JPTNEFVPD', '1A+F8CWtaI9OL5WOhFdhPwW1AWWSsqp9pPPv0DDB')
     else:
         print("No arguments specified")
