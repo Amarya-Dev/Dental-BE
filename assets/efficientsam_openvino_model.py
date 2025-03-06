@@ -94,7 +94,7 @@ if __name__ == "__main__":
         # Set up model path
         # model_path_print = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
         # print("model_path_print", model_path_print)
-        model_path =  "assets/efficient-sam-vitt.xml"
+        model_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
 
         # model_path += '\\efficient-sam-vitt.xml'
 
