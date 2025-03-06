@@ -13,27 +13,51 @@ dotenv.config();
 
 export const runModel = async (req, res, next) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ error: "File is required" });
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
         }
+        let result;
+        let command;
+        // const doctorId = req.params.doctor_id
+        // const imagePath = req.file.buffer
+        const selectionType = req.body.selectionType; 
+        const inputPoints = JSON.parse(req.body.inputPoints || "[[142, 81], [145, 10]]");
 
-        const formData = new FormData();
-        const fileBlob = new Blob([req.file.buffer], { type: req.file.mimetype });
+        const pythonProcess = spawn("python3", [
+            "assets/efficientsam_openvino_model.py", 
+            inputPoints[0][0],
+            inputPoints[0][1],
+            inputPoints[1][0],
+            inputPoints[1][1],
+            selectionType
+        ]);
 
-        formData.append("file", fileBlob, req.file.originalname);
-        formData.append("input_points", JSON.stringify(req.body.inputPoints || [[142, 81], [145, 10]]));
-        formData.append("selection_type", req.body.selectionType || "point");
+        pythonProcess.stdin.write(req.file.buffer);
+        pythonProcess.stdin.end();
+      
+        let outputData = "";
+        pythonProcess.stdout.on("data", (data) => {
+            outputData += data.toString();
+        });
 
-        // const response = await axios.post("http://127.0.0.1:5001/process-image", formData, {
-        //     headers: formData.getHeaders() // Ensure this works with "form-data" package
-        // });
+        pythonProcess.stderr.on("data", (data) => {
+            console.error(Error: ${data.toString()});
+        });
 
-        if (response.data.s3_key) {
-            return successResponse(res, { s3_key: response.data.s3_key }, "Image processed successfully");
-        } else {
-            throw new Error(response.data.error || "Processing failed");
-        }
+        pythonProcess.on("close", async(code) => {
+            console.log(`Python script exited with code ${code}`);
+            console.log(outputData)
+            let s3_Key = outputData.trim();
+
+            try {
+                let pre_signed_url = await generatePresignedUrl(s3_Key, "image/png");
+                return successResponse(res, { s3_Key, pre_signed_url }, "");
+            } catch (error) {
+                return error5Response(res, error,  'Failed to generate preSigned Url');
+            }
+        });
     } catch (error) {
-        return error5Response(res, error, "Error processing image");
+        next(error);
     }
 };

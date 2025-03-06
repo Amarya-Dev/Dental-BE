@@ -1,94 +1,108 @@
-import io
-import uuid
+import sys
 import boto3
 import os
-import matplotlib.pyplot as plt
+import io
+import base64
 from PIL import Image
-from flask import Flask, request, jsonify
-from helper import prepare_input, postprocess_results, show_anns_dark, initialize_model
+import matplotlib.pyplot as plt
+import uuid
+import shutil
+from botocore.exceptions import NoCredentialsError
+from helper import (
+    prepare_input,
+    postprocess_results,
+    show_anns_dark,
+    initialize_model
+)
 from dotenv import load_dotenv
-
-# Load environment variables
 load_dotenv()
 
-# AWS S3 Credentials
-AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-DOCTORS_BUCKET = os.getenv("DOCTORS_BUCKET")
+AWS_ACCESS_KEY =  os.getenv('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY =  os.getenv('AWS_SECRET_ACCESS_KEY')
+DOCTORS_BUCKET =  os.getenv('DOCTORS_BUCKET')
 
-# Initialize S3 client
-s3_client = boto3.client("s3", aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
-# Initialize Flask app
-app = Flask(__name__)
-
-@app.route("/process-image", methods=["POST"])
-def process_image():
+def model_call_function(image, input_points, compiled_model, type_of_selection, bucket_name, aws_access_key, aws_secret_key):
     try:
-        # Get image file from request
-        print("/process-image API called")
-        if "image" not in request.files:
-            return jsonify({"error": "No image file provided"}), 400
-        image_file = request.files["image"]
-        
-        # Get input points & selection type
-        input_points = request.form.get("input_points")
-        print("input_points:", input_points)
-        selection_type = request.form.get("selection_type")
-        print("selection_type:", selection_type)
+        # image = Image.open(image_path)
+        # image = image.convert('RGB')
+        # image = Image.open(io.BytesIO(image_buffer)).convert('RGB')
 
-        # Convert input points string to list
-        input_points = eval(input_points)  # Example: "[[100, 200], [300, 400]]"
+        input_labels = []
 
-        # Load image
-        image = Image.open(image_file).convert("RGB")
+        if type_of_selection == 'point':
+            input_labels = [1, 1]
+        elif type_of_selection == 'box':
+            input_labels = [2, 3]
 
-        # Load model & process image
-        compiled_model = initialize_model("assets/efficient-sam-vitt.xml")
-        print("passed")
-        input_labels = [1, 1] if selection_type == "point" else [2, 3]
         example_input = prepare_input(image, input_points, input_labels, torch_tensor=False)
+        
+        # print("Executing compiled_model...")
+        print("reached result")
         result = compiled_model(example_input)
-        print("passed")
+        print("Model execution successful!")
 
-        # Post-process results
         predicted_logits, predicted_iou = result[0], result[1]
         predicted_mask = postprocess_results(predicted_iou, predicted_logits)
+        print("passed")
+    except Exception as e:
+        print("Error in model execution:", e)
+        return None
 
-        # Display results
+    try:
         plt.figure(figsize=(10, 6))
         plt.imshow(image)
         plt.axis("off")
         show_anns_dark(predicted_mask, plt.gca())
 
-        # Save processed image to buffer
+        # Save image in memory (BytesIO) instead of local disk
         img_buffer = io.BytesIO()
         plt.savefig(img_buffer, format="png", bbox_inches="tight", pad_inches=0)
         plt.close()
-        img_buffer.seek(0)
-        print("passed")
-        # Generate unique filename
+        img_buffer.seek(0)  # Move pointer to start
+
+        # Generate a unique filename for S3
         random_filename = str(uuid.uuid4()) + ".png"
         s3_key = f"convertedImages/{random_filename}"
 
+        # print(f"Uploading {s3_key} to S3...")
+
         # Upload to S3
-        s3_client.upload_fileobj(img_buffer, DOCTORS_BUCKET, s3_key, ExtraArgs={"ContentType": "image/png"})
-        print("s3_client passed")
-        try:
-            presigned_url = s3_client.generate_presigned_url(
-                "get_object",
-                Params={"Bucket": DOCTORS_BUCKET, "Key": s3_key},
-                ExpiresIn=3600
-            )
-        except Exception as e:
-            print(f"Error generating pre-signed URL: {e}")
-            return None
-        # Return S3 file path
-        s3_url = f"https://{DOCTORS_BUCKET}.s3.amazonaws.com/{s3_key}"
-        return jsonify({"message": "Image processed successfully", "s3_url": 's3_url', s3_key:s3_key, 'presigned_url':presigned_url}), 200
+        s3_client = boto3.client("s3", aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key)
+        s3_client.upload_fileobj(img_buffer, bucket_name, s3_key, ExtraArgs={"ContentType": "image/png"})
+        
+        print(s3_key)
+        return s3_key
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print("Error uploading to S3:", e)
+        return None
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+if _name_ == "_main_":
+    if len(sys.argv) > 1:
+        type_of_selection = str(sys.argv[5])
+
+        image_bytes = sys.stdin.buffer.read()
+        image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+
+        # Process input points based on selection type
+        input_points = []
+        
+        if type_of_selection == 'point':
+            input_points = [[int(sys.argv[1]), int(sys.argv[2])], [int(sys.argv[3]), int(sys.argv[4])]]
+        elif type_of_selection == 'box':
+            input_points = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])]
+
+        # Set up model path
+        model_path_print = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
+        print("model_path_print", model_path_print)
+        model_path =  "assets/efficient-sam-vitt.xml"
+
+        # model_path += '\\efficient-sam-vitt.xml'
+
+        # Initialize and run model
+        compiled_model = initialize_model(model_path)
+        print("passed")
+        model_call_function(image, input_points, compiled_model, type_of_selection,'bucketbyaws', 'AKIARHJJNG2JPTNEFVPD', '1A+F8CWtaI9OL5WOhFdhPwW1AWWSsqp9pPPv0DDB')
+    else:
+        print("No arguments specified")
