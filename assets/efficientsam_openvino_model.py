@@ -26,13 +26,16 @@ app = Flask(__name__)
 def process_image():
     try:
         # Get image file from request
+        print("/process-image API called")
         if "image" not in request.files:
             return jsonify({"error": "No image file provided"}), 400
         image_file = request.files["image"]
         
         # Get input points & selection type
         input_points = request.form.get("input_points")
+        print("input_points:", input_points)
         selection_type = request.form.get("selection_type")
+        print("selection_type:", selection_type)
 
         # Convert input points string to list
         input_points = eval(input_points)  # Example: "[[100, 200], [300, 400]]"
@@ -42,9 +45,11 @@ def process_image():
 
         # Load model & process image
         compiled_model = initialize_model("assets/efficient-sam-vitt.xml")
+        print("passed")
         input_labels = [1, 1] if selection_type == "point" else [2, 3]
         example_input = prepare_input(image, input_points, input_labels, torch_tensor=False)
         result = compiled_model(example_input)
+        print("passed")
 
         # Post-process results
         predicted_logits, predicted_iou = result[0], result[1]
@@ -61,13 +66,14 @@ def process_image():
         plt.savefig(img_buffer, format="png", bbox_inches="tight", pad_inches=0)
         plt.close()
         img_buffer.seek(0)
-
+        print("passed")
         # Generate unique filename
         random_filename = str(uuid.uuid4()) + ".png"
         s3_key = f"convertedImages/{random_filename}"
 
         # Upload to S3
         s3_client.upload_fileobj(img_buffer, DOCTORS_BUCKET, s3_key, ExtraArgs={"ContentType": "image/png"})
+        print("s3_client passed")
         try:
             presigned_url = s3_client.generate_presigned_url(
                 "get_object",
