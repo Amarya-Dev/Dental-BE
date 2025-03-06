@@ -93,7 +93,8 @@ if __name__ == "__main__":
             input_points = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])]
 
         # Set up model path
-        model_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
+        # model_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
+        model_path ="assets/efficient-sam-vitt.xml"
         # model_path += '\\efficient-sam-vitt.xml'
 
         # s3 = boto3.client("s3", aws_access_key_id='AKIARHJJNG2JPTNEFVPD', aws_secret_access_key='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')
