@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS features (
     box INT DEFAULT 0,
     prosthesis INT DEFAULT 0,
     audio INT DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (_id),
     FOREIGN KEY (doctor_id) REFERENCES doctors(_id) ON DELETE CASCADE,
     INDEX idx_doctor_id (doctor_id)

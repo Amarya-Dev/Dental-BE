@@ -46,3 +46,12 @@ export const updateFeatureCountQuery = (array) => {
                 WHERE doctor_id = ?`
     return pool.query(query, array);
 }
+
+export const insertTimeLockFeatureCountQuery = (array) => {
+    let query = `INSERT INTO time_count_features (
+            doctor_id,
+            time_in_secs
+        ) VALUES (?,?);`;
+
+    return pool.query(query, array);
+};

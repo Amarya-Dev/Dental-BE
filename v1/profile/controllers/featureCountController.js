@@ -1,7 +1,7 @@
 import dotenv from "dotenv"
 import {validationResult} from "express-validator"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse, error5Response } from "../../../utils/response.js"
-import { getFeatureCountForDoctorQuery, insertFeatureCountQuery, updateFeatureCountQuery } from "../models/featureQuery.js";
+import { getFeatureCountForDoctorQuery, insertFeatureCountQuery, insertTimeLockFeatureCountQuery, updateFeatureCountQuery } from "../models/featureQuery.js";
 dotenv.config();
 
 export const countFeatureLock = async (req, res, next) => {
@@ -55,6 +55,25 @@ export const countFeatureLock = async (req, res, next) => {
             }
         }
         return successResponse(res, "", 'Feature Count Data added successfully!');;
+    
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const lockTimeFeature = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return errorResponse(res, errors.array(), "")
+        }
+
+        const body = req.body
+        console.log(body)
+
+        let tdata = await insertTimeLockFeatureCountQuery([body.doctor_id, body.time])
+     
+        return successResponse(res, tdata, 'Feature Count Data added successfully!');;
     
     } catch (error) {
         next(error);
