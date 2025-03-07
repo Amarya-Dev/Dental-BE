@@ -17,10 +17,13 @@ export const runModel = async (req, res, next) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, errors.array(), "")
         }
-        let result;
-        let command;
-        // const doctorId = req.params.doctor_id
-        // const imagePath = req.file.buffer
+        if (!req.file) {
+            return errorResponse(res, '', 'No file uploaded')
+        }
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!allowedMimeTypes.includes(req.file.mimetype)) {
+            return errorResponse(res, '', 'Invalid file type. Only JPEG and PNG are allowed.')
+        }
         const selectionType = req.body.selectionType; 
         const inputPoints = JSON.parse(req.body.inputPoints || "[[142, 81], [145, 10]]");
 
