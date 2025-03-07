@@ -22,7 +22,10 @@ AWS_SECRET_ACCESS_KEY =  os.getenv('AWS_SECRET_ACCESS_KEY')
 DOCTORS_BUCKET =  os.getenv('DOCTORS_BUCKET')
 
 
-def model_call_function(image, input_points, compiled_model, type_of_selection, bucket_name, aws_access_key, aws_secret_key):
+model_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
+compiled_model = initialize_model(model_path)
+
+def model_call_function(image, input_points, type_of_selection, bucket_name, aws_access_key, aws_secret_key):
     try:
         # image = Image.open(image_path)
         # image = image.convert('RGB')
@@ -43,6 +46,7 @@ def model_call_function(image, input_points, compiled_model, type_of_selection, 
 
         predicted_logits, predicted_iou = result[0], result[1]
         predicted_mask = postprocess_results(predicted_iou, predicted_logits)
+        
     except Exception as e:
         print("Error in model execution:", e)
         return None
@@ -91,15 +95,7 @@ if __name__ == "__main__":
         elif type_of_selection == 'box':
             input_points = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])]
 
-        # Set up model path
-        # model_path_print = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
-        # print("model_path_print", model_path_print)
-        model_path = os.path.join(os.getcwd(), "assets", "efficient-sam-vitt.xml")
-
-        # model_path += '\\efficient-sam-vitt.xml'
-
-        # Initialize and run model
-        compiled_model = initialize_model(model_path)
-        model_call_function(image, input_points, compiled_model, type_of_selection,'bucketbyaws', 'AKIARHJJNG2JPTNEFVPD', '1A+F8CWtaI9OL5WOhFdhPwW1AWWSsqp9pPPv0DDB')
+      
+        model_call_function(image, input_points, type_of_selection,'bucketbyaws', 'AKIARHJJNG2JPTNEFVPD', '1A+F8CWtaI9OL5WOhFdhPwW1AWWSsqp9pPPv0DDB')
     else:
         print("No arguments specified")
