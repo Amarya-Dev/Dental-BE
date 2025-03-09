@@ -17,15 +17,15 @@ import { sendWarningsToDoctors } from './cron_jobs/cronFunctions.js';
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-  // const corsOptions = {
-  //   origin: ['http://localhost:3000'], // Add your frontend's URLs
-  //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  //   allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'], // Explicitly allow necessary headers
-  //   credentials: true,  // Allows sending cookies & Authorization headers
-  // };
+  const corsOptions = {
+    origin: ['http://localhost:3000', "https://dental-insight-studio-react-fork-pxmn.vercel.app"], // Add your frontend's URLs
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'], // Explicitly allow necessary headers
+    credentials: true,  // Allows sending cookies & Authorization headers
+  };
 
-  // app.use(cors(corsOptions));
-  // app.options('*', cors(corsOptions));
+  app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions));
 
   // Import & Define API versions
   app.use('/api/v1', routes);
