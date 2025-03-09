@@ -40,8 +40,8 @@ config();
 
   // Load SSL certificate
   const sslOptions = {
-    key: fs.readFileSync('/etc/ssl/private/selfsigned.key'),
-    cert: fs.readFileSync('/etc/ssl/certs/selfsigned.crt'),
+    key: fs.readFileSync('/etc/letsencrypt/live/insightstudio.duckdns.org/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/insightstudio.duckdns.org/fullchain.pem')
   };
 
   // Start HTTPS Server on the specified port
