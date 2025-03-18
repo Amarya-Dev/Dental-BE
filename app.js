@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 import cors from 'cors';
 import fs from 'fs';
 import https from 'https';
+import http from 'http';
 import routes from './v1/profile/routes/routes.js'
 import { runCronJobs } from './cron_jobs/schedulers.js';
 import { createS3Bucket, createDefaultFolder } from './utils/upload.js';
@@ -37,16 +38,23 @@ config();
   runCronJobs();
 
   const PORT = process.env.PORT || 4000;
-
+  let sslOptions={}
+  const ENVIRONMENT = process.env.ENVIRONMENT
   // Load SSL certificate
-  const sslOptions = {
-    key: fs.readFileSync('/etc/letsencrypt/live/insightstudio.duckdns.org/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/insightstudio.duckdns.org/fullchain.pem')
-  };
+  if(ENVIRONMENT=='production'){
+    sslOptions = {
+      key: fs.readFileSync('/etc/letsencrypt/live/insightstudio.duckdns.org/privkey.pem'),
+      cert: fs.readFileSync('/etc/letsencrypt/live/insightstudio.duckdns.org/fullchain.pem')
+    };
+    https.createServer(sslOptions, app).listen(PORT, () => {
+      console.log(`Server is running on HTTPS port ${PORT}`);
+    });
+  }else{
+    http.createServer(app).listen(PORT, () => {
+      console.log(`Server is running on HTTP port ${PORT}`);
+    });
+  }
 
   // Start HTTPS Server on the specified port
-  https.createServer(sslOptions, app).listen(PORT, () => {
-    console.log(`Server is running on HTTPS port ${PORT}`);
-  });
 
 })();

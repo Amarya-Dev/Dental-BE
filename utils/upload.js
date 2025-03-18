@@ -105,6 +105,7 @@ export const listFolderContents = async (folder_name) => {
 
   try {
     const data = await s3.listObjectsV2(params).promise();
+    console.log(data.Contents)
     return data.Contents
   } catch (error) {
     console.error(`Error listing folder contents: ${error.message}`);
@@ -114,7 +115,6 @@ export const listFolderContents = async (folder_name) => {
 export const deleteMultipleObjects = async (file_keys) => {
   try {
     let  obj_array = file_keys.map((key) => ({ Key: key }))
-    console.log(obj_array)
     const params = {
       Bucket: BUCKET_NAME,
       Delete: {
