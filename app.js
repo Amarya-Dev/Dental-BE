@@ -35,7 +35,8 @@ config();
     res.send("Hey, I'm online now with HTTPS!!");
   });
   
-  runCronJobs();
+  await runCronJobs();
+  await createS3Bucket()
 
   const PORT = process.env.PORT || 4000;
   let sslOptions={}
@@ -43,8 +44,8 @@ config();
   // Load SSL certificate
   if(ENVIRONMENT=='production'){
     sslOptions = {
-      key: fs.readFileSync('/etc/letsencrypt/live/insightstudio.duckdns.org/privkey.pem'),
-      cert: fs.readFileSync('/etc/letsencrypt/live/insightstudio.duckdns.org/fullchain.pem')
+      key: fs.readFileSync(process.env.PRIV_KEY_PEM),
+      cert: fs.readFileSync(process.env.FULL_CHAIN_KEY_PEM)
     };
     https.createServer(sslOptions, app).listen(PORT, () => {
       console.log(`Server is running on HTTPS port ${PORT}`);
