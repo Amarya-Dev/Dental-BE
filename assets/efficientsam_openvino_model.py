@@ -96,6 +96,6 @@ if __name__ == "__main__":
             input_points = [int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])]
 
       
-        model_call_function(image, input_points, type_of_selection,'bucketbyaws', 'AKIARHJJNG2JPTNEFVPD', '1A+F8CWtaI9OL5WOhFdhPwW1AWWSsqp9pPPv0DDB')
+        model_call_function(image, input_points, type_of_selection,DOCTORS_BUCKET, AWS_ACCESS_KEY,AWS_SECRET_ACCESS_KEY)
     else:
         print("No arguments specified")

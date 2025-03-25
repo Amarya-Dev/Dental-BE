@@ -33,8 +33,8 @@ export const createFolder = async (folder_name) => {
 
 export const createDefaultFolder = async() => {
   try {
-    let DEFAULT_FOLDERS=['consent','prosthesis']
-    console.log(DEFAULT_FOLDERS);
+    let DEFAULT_FOLDERS=['consent','prosthesis', 'convertedImages']
+    // console.log(DEFAULT_FOLDERS);
     const folder_promises = DEFAULT_FOLDERS.map(folder => createFolder(folder));
     await Promise.all(folder_promises);
   } catch (error) {

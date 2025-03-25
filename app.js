@@ -37,6 +37,7 @@ config();
   
   await runCronJobs();
   await createS3Bucket()
+  await createDefaultFolder()
 
   const PORT = process.env.PORT || 4000;
   let sslOptions={}
