@@ -3,7 +3,7 @@ import {validationResult} from "express-validator"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { successResponse, errorResponse, notFoundResponse, unAuthorizedResponse } from "../../../utils/response.js"
-import {patientDetailQuery, patientDataSaveQuery, getDoctorFolderName, getS3FolderNameQuery, insertFileKeyNameQuery, allPatientsFolderNameQuery, getAllFilesSignedUrlQuery, deleteFilesQuery, getKeyNamesByFileIds, insertDoctorFileKeyNameQuery, getConsentAndProsthesisSignedUrlQuery} from "../models/patientQuery.js"
+import {patientDetailQuery, patientDataSaveQuery, getDoctorFolderName, getS3FolderNameQuery, insertFileKeyNameQuery, allPatientsFolderNameQuery, getAllFilesSignedUrlQuery, deleteFilesQuery, getKeyNamesByFileIds, insertDoctorFileKeyNameQuery, getConsentAndProsthesisSignedUrlQuery, deleteFilesFromDoctorQuery, getKeyNamesByFileIdsForDoctor} from "../models/patientQuery.js"
 import { createSubFolder, deleteMultipleObjects, generatePresignedUrl, listFolderContents, uploadObject } from "../../../utils/upload.js"
 dotenv.config();
 
@@ -97,14 +97,23 @@ export const uploadPatientFile = async(req, res, next) =>{
 export const deletePatientFile = async(req, res, next) => {
     try {
         let {file_ids, doctor_id, patient_id} = req.body;
-
-        let [key_names] = await getKeyNamesByFileIds(file_ids);
         let key_array = [];
-        for(let i = 0 ; i < key_names.length ; i++) {
-            key_array.push(key_names[i].key_name);
+        const deletefunc = async(key_names) => {
+            for(let i = 0 ; i < key_names.length ; i++) {
+                key_array.push(key_names[i].key_name);
+            }
+            await deleteMultipleObjects(key_array);
         }
-        await deleteMultipleObjects(key_array);
-        await deleteFilesQuery(patient_id, doctor_id, key_array)
+
+        if(!patient_id){
+            let [key_names] = await getKeyNamesByFileIdsForDoctor(file_ids);
+            await deletefunc(key_names)
+            await deleteFilesFromDoctorQuery(doctor_id, key_array);
+        }else{
+            let [key_names] = await getKeyNamesByFileIds(file_ids);
+            await deletefunc(key_names)
+            await deleteFilesQuery(patient_id, doctor_id, key_array)
+        }
         return successResponse(res, '', 'Patient file deleted successfully!');
     } catch (error) {
         next(error);

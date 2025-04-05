@@ -96,9 +96,27 @@ export const deleteFilesQuery = (patientId, doctorId, keyNames) => {
     return pool.query(query, [patientId, doctorId, ...keyNames]);
 };
 
+export const deleteFilesFromDoctorQuery = (doctorId, keyNames) => {
+    if (!keyNames || keyNames.length === 0) {
+        // Nothing to delete
+        return Promise.resolve([[], []]);
+    }
+    let placeholders = keyNames.map(() => '?').join(',');
+    let query = `DELETE FROM doctor_files WHERE doctor_id=? AND key_name IN (${placeholders})`;
+    
+    return pool.query(query, [doctorId, ...keyNames]);
+};
+
 export const getKeyNamesByFileIds = (file_id) => {
     let placeholders = file_id.map(() => '?').join(','); // Create placeholders for the file_ids array
     let query = `SELECT key_name FROM aws_files WHERE _id IN (${placeholders})`;
+    
+    return pool.query(query, file_id);
+};
+
+export const getKeyNamesByFileIdsForDoctor = (file_id) => {
+    let placeholders = file_id.map(() => '?').join(','); // Create placeholders for the file_ids array
+    let query = `SELECT key_name FROM doctor_files WHERE _id IN (${placeholders})`;
     
     return pool.query(query, file_id);
 };
