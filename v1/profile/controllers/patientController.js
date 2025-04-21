@@ -55,9 +55,30 @@ export const uploadPatientFile = async(req, res, next) =>{
     try {
         const file = req.file;
         const buffer = file.buffer;
-        const file_name = file.originalname
+        let file_name = file.originalname
         let {patient_id, doctor_id} = req.body;
         let {type}= req.query
+
+        file_name = generateFilenameFromOriginal(file_name)
+        function generateFilenameFromOriginal(originalFilename) {
+            // Extract extension from the original filename
+            const extension = originalFilename.split('.').pop();
+          
+            // Get current date and time
+            const now = new Date();
+            const pad = (n) => n.toString().padStart(2, '0');
+          
+            const year = now.getFullYear();
+            const month = pad(now.getMonth() + 1);
+            const day = pad(now.getDate());
+            const hours = pad(now.getHours());
+            const minutes = pad(now.getMinutes());
+            const seconds = pad(now.getSeconds());
+          
+            const timestamp = `${year}${month}${day}_${hours}${minutes}${seconds}`;
+            return `file_${timestamp}.${extension}`;
+          }
+
         const fileUploadFunction = async (patient_id, doctor_id, type)=>{
             let response;
             let folder_name;
