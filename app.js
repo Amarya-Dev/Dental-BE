@@ -21,7 +21,7 @@ config();
   app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
   const corsOptions = {
-    origin: ['http://localhost:3000', "https://dental-insight-studio-react-fork-pxmn.vercel.app"],
+    origin: ['http://localhost:3000', "https://dental-insight-studio-react-fork-pxmn.vercel.app", "https://insight-studio-five.vercel.app"],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
     credentials: true,
